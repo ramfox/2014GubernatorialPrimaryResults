@@ -1,0 +1,13 @@
+load("qri.sky", "qri")
+load("http.sky", "http")
+
+def download(ds):
+  # get data from github content url
+  res = http.get("https://raw.githubusercontent.com/ramfox/2014GubernatorialPrimaryResults/master/2014_gubernatorial_democrat_primary_results.json")
+  # parse json and return
+  ds.set_body(res.json())
+  return ds
+
+
+def transform(ds):
+  return ds

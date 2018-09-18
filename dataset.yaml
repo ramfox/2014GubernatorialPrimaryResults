@@ -20,7 +20,7 @@ commit:
 # Below is an example structure
 structure:
   # Syntax in JSON format:
-  # format: json
+  format: json
   # Schema defines the "shape" data should take, here we're saying
   # data should be an array of strings, like this: ["foo", "bar", "baz"]
   schema:
