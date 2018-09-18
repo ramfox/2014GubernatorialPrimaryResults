@@ -1,0 +1,79 @@
+# old transform file, which pdf parsing added 
+def download(qri):
+  url = qri.get_config("url")
+  r = qri.http.get(url)
+  if r.status_code != 200:
+    error("error getting pdf")
+
+  reader = qri.pdf(r.content())
+
+  page = reader.page(1)
+  if page.v().is_null():
+    error("error pdf page is null")
+
+  content = page.content()
+  texts = content.text()
+
+  # iterate through each piece of text and add to the full_text string
+  # we can then separate each line using the split function
+  full_text = ""
+  for text in texts:
+    full_text += text.s
+  lines = full_text.split('\n')
+  return lines
+
+
+def transform(qri):
+  data = []
+  lines = qri.download
+
+  title = "{} {} Results {}".format(lines[0], lines[1], lines[2])
+
+  qri.set
+  # set schema
+  schema = {
+    "items":{
+      "items": [
+        { 
+        "description": "county",
+          "title": lines[3],
+        "type": "string"
+        },
+        { 
+        "description": "votes for candidate {0} {1} in a particular county".format(lines[4], lines[7]),
+          "title": "{0} {1}".format(lines[4], lines[7]),
+        "type": "integer"
+        },
+        { 
+        "description": "votes for candidate {0} {1} in a particular county".format(lines[5], lines[8]),
+          "title": "{0} {1}".format(lines[5], lines[8]),
+        "type": "integer"
+        },
+        { 
+        "description": "votes for candidate {0} {1} in a particular county".format(lines[6], lines[9]),
+          "title": "{0} {1}".format(lines[6], lines[9]),
+        "type": "integer"
+        },
+      ],
+      "type": "array"
+    },
+    "type": "array"
+  }
+  qri.set_schema(schema)
+
+  # start from 10, every 3 
+  for i in range(10, len(lines) - 1, 4):
+    if lines[i] == "Total NYC" or lines[i] == "Total Outside NYC":
+      continue
+    row = []
+    row.append(lines[i])
+    row.append(str_to_int(lines[i+1]))
+    row.append(str_to_int(lines[i+2]))
+    row.append(str_to_int(lines[i+3]))
+    data.append(row)
+
+  return data
+
+def str_to_int(s):
+  s = s.replace(",","")
+  return int(s)
