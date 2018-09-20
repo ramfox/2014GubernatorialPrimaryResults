@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -52,7 +53,7 @@ func main() {
 
 	// meta := lines[0:10]
 	votes := lines[10:]
-	data := []interface{}{}
+	data := [][]interface{}{}
 
 	for i := 0; i < len(votes)-1; i += 4 {
 		if votes[i] == "Total NYC" || votes[i] == "Total Outside NYC" || votes[i] == "STATEWIDE TOTAL" {
@@ -83,6 +84,11 @@ func main() {
 
 		data = append(data, row)
 	}
+
+	sort.Slice(data, func(i, j int) bool {
+		return data[i][0].(string) < data[j][0].(string)
+	})
+
 	json, err := json.Marshal(data)
 	if err != nil {
 		fmt.Printf("error marshaling data to json: %s\n", err)
